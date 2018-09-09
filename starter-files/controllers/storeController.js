@@ -1,9 +1,13 @@
-exports.myMiddleware = (req, res, next) => {
-  req.name = 'Mike';
-  next(); // done with my work, now pass on to the next
-};
-
 exports.homePage = (req, res) => {
   console.log(req.name);
   res.render('index');
+};
+
+exports.addStore = (req, res) => {
+  res.render('editStore', { title: 'Add Store' });
+};
+
+exports.createStore = (req, res) => {
+  console.log(req.body);
+  res.json(req.body);
 };
