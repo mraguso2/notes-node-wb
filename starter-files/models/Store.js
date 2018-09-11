@@ -15,7 +15,25 @@ const storeSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
-  tags: [String] // array of Strings
+  tags: [String], // array of Strings
+  created: {
+    type: Date,
+    default: Date.now
+  },
+  location: {
+    type: {
+      type: String,
+      default: 'Point'
+    },
+    coordinates: [{
+      type: Number,
+      required: 'You must supply coordinates!'
+    }],
+    address: {
+      type: String,
+      required: 'You must supply an address, bitch!'
+    }
+  }
 });
 
 // run function before save
