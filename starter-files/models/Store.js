@@ -33,7 +33,8 @@ const storeSchema = new mongoose.Schema({
       type: String,
       required: 'You must supply an address, bitch!'
     }
-  }
+  },
+  photo: String
 });
 
 // run function before save
