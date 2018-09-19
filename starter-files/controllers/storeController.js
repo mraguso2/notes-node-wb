@@ -90,10 +90,18 @@ exports.getStoreBySlug = async (req, res, next) => {
   if (!store) return next();
   // 3. render out store template
   res.render('store', { title: `${store.name}`, store });
-}
-;
+};
+
 exports.getStoresByTags = async (req, res, next) => {
-  const tags = await Store.getTagsList();
   const { tag } = req.params;
-  res.render('tag', { tags, title: 'Tags', tag });
+  // if no tag fallback give me any store that has a tag property on it
+  const tagQuery = tag || { $exists: true };
+
+  const tagsPromise = Store.getTagsList();
+  const storePromise = Store.find({ tags: tagQuery });
+
+  // can now wait for multiple independent promises to come back
+  const [tags, stores] = await Promise.all([tagsPromise, storePromise]);
+
+  res.render('tag', { tags, title: 'Tags', tag, stores });
 };

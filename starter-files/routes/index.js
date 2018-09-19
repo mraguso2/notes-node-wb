@@ -2,6 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 const storeController = require('../controllers/storeController');
+const userController = require('../controllers/userController');
 
 // fn composition to handle errors with asnyc/await
 const { catchErrors } = require('../handlers/errorHandlers');
@@ -29,5 +30,7 @@ router.get('/store/:slug', catchErrors(storeController.getStoreBySlug));
 
 router.get('/tags', catchErrors(storeController.getStoresByTags));
 router.get('/tags/:tag', catchErrors(storeController.getStoresByTags));
+
+router.get('/login', userController.loginForm);
 
 module.exports = router;

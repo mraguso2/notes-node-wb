@@ -57,13 +57,13 @@ storeSchema.pre('save', async function slugIt(next) {
   next();
 });
 
-storeSchema.statics.getTagsList = function () {
+storeSchema.statics.getTagsList = function getTags() {
   // $ means it is a field
   return this.aggregate([
     { $unwind: '$tags' },
-    { $group: { _id: '$tags', count: { $sum: 1 } }},
-    { $sort: { count: -1 }}
+    { $group: { _id: '$tags', count: { $sum: 1 } } },
+    { $sort: { count: -1 } }
   ]);
-}
+};
 
 module.exports = mongoose.model('Store', storeSchema);
