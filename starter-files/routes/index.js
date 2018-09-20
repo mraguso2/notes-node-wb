@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const storeController = require('../controllers/storeController');
 const userController = require('../controllers/userController');
+const authController = require('../controllers/authController');
 
 // fn composition to handle errors with asnyc/await
 const { catchErrors } = require('../handlers/errorHandlers');
@@ -32,5 +33,17 @@ router.get('/tags', catchErrors(storeController.getStoresByTags));
 router.get('/tags/:tag', catchErrors(storeController.getStoresByTags));
 
 router.get('/login', userController.loginForm);
+router.get('/register', userController.registerForm);
+
+// 1. Validate the registration data
+// 2. register the user
+// 3. we need to log them in
+router.post('/register',
+  userController.validateRegister,
+  userController.register,
+  authController.login
+);
+
+router.post('/login', userController.loginForm);
 
 module.exports = router;
