@@ -16,7 +16,7 @@ exports.validateRegister = (req, res, next) => {
   req.checkBody('name', 'You must supply a name!').notEmpty();
   req.checkBody('email', 'That Email is not valid!').isEmail();
   req.sanitizeBody('email').normalizeEmail({
-    remove_dots: false,
+    gmail_remove_dots: false,
     remove_extension: false,
     gmail_remove_subaddress: false
   });
@@ -40,4 +40,25 @@ exports.register = async (req, res, next) => {
   const register = promisify(User.register, User);
   await register(user, req.body.password);
   next(); // pass to authController.login
+};
+
+exports.account = (req, res) => {
+  res.render('account', { title: 'Edit Your Account' });
+};
+
+exports.updateAccount = async (req, res) => {
+  const updates = {
+    name: req.body.name,
+    email: req.body.email
+  };
+
+  // findOneAndUpdate(query, updates, options)
+  const user = await User.findOneAndUpdate(
+    { _id: req.user._id },
+    { $set: updates },
+    { new: true, runValidators: true, context: 'query' }
+  );
+
+  req.flash('success', 'Updated your profile!');
+  res.redirect('back');
 };
