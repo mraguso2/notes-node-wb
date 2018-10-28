@@ -8,6 +8,7 @@ if (major < 7 || (major === 7 && minor <= 5)) {
 }
 
 // import environmental variables from our variables.env file
+// pass in options: custom path to file
 require('dotenv').config({ path: 'variables.env' });
 
 // Connect to our Database and handle any bad connections

@@ -25,6 +25,7 @@ const storeSchema = new mongoose.Schema({
       type: String,
       default: 'Point'
     },
+    // make up a point - backwards: lng & lat
     coordinates: [{
       type: Number,
       required: 'You must supply coordinates!'

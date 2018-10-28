@@ -3,13 +3,13 @@ const crypto = require('crypto');
 
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
-const promisify = require('es6-promisify')
+const promisify = require('es6-promisify');
 
 exports.login = passport.authenticate('local', {
   failureRedirect: '/login',
   failureFlash: 'Failed Login!',
   successRedirect: '/',
-  successFlash: 'You are now logged in',
+  successFlash: 'You are now logged in'
 });
 
 exports.logout = (req, res) => {
@@ -32,10 +32,10 @@ exports.forgot = async (req, res) => {
   // 1. See if a user with that email exists
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
-    req.flash('error', 'No account with that email'); // don't tell them no email in prod - security flaw
+    req.flash('error', 'No account with that email'); // don't tell them no email in prod - security flaw - could just saw sent email reset to that email
     return res.redirect('/login');
   }
-  // 2. Set reset tokens and expiry on their account
+  // 2. Set reset tokens and expiry on their account - values saved to user model
   user.resetPasswordToken = crypto.randomBytes(20).toString('hex');
   user.resetPasswordExpires = Date.now() + 3600000; // 1 hour from now
   await user.save();
@@ -49,7 +49,7 @@ exports.forgot = async (req, res) => {
 exports.reset = async (req, res) => {
   const user = await User.findOne({
     resetPasswordToken: req.params.token,
-    resetPasswordExpires: { $gt: Date.now() } // check the token
+    resetPasswordExpires: { $gt: Date.now() } // check the token - $gt mongo fn
   });
   if (!user) {
     req.flash('error', 'Password reset is invalid or has expired');
@@ -59,6 +59,7 @@ exports.reset = async (req, res) => {
   res.render('reset', { title: 'Reset Your Password' });
 };
 
+// more user friendly to in addition let user know if not match right in UI
 exports.confirmedPasswords = (req, res, next) => {
   if (req.body.password === req.body['password-confirm']) { // need brackets bc dash in obj prop
     next(); // keep it going
@@ -78,7 +79,7 @@ exports.update = async (req, res) => {
     req.flash('error', 'Password reset is invalid or has expired');
     return res.redirect('/login');
   }
-  // made available to us
+  // made available to us and bind setPassword to user
   const setPassword = promisify(user.setPassword, user);
   await setPassword(req.body.password);
 
@@ -89,7 +90,7 @@ exports.update = async (req, res) => {
   // save user to db
   const updatedUser = await user.save();
 
-  // TODO where is .login coming from
+  // .login coming from passport - made available to us
   await req.login(updatedUser);
 
   req.flash('success', '🎊 NIce! Your password has been reset! You are now logged in!');

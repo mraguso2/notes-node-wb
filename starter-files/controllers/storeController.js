@@ -39,6 +39,7 @@ exports.resize = async (req, res, next) => {
     return;
   }
   const extension = req.file.mimetype.split('/')[1];
+  // add photo name to req.body
   req.body.photo = `${uuid.v4()}.${extension}`;
   // now we resize
   const photo = await jimp.read(req.file.buffer);
@@ -71,15 +72,17 @@ exports.editStore = async (req, res) => {
 };
 
 exports.updateStore = async (req, res) => {
-  // set the location data to be a point
+  // need to set the location data to be a point when updating
+  // using findOneAndUpdate, the defaults do not kick in
   req.body.location.type = 'Point';
   // find and update the store
   const store = await Store.findOneAndUpdate({ _id: req.params.id }, req.body, {
     new: true, // return the new store instead of the old one
     runValidators: true
+    // setDefaultsOnInsert: true - this line would allow us to remove setting the location type above
   }).exec();
   // redirect them to the store and tell them it worked
-  req.flash('success', `Successfully updated <strong>${store.name}</strong>. <a href="/stores/${store.slug}">View Store ➔</a>`);
+  req.flash('success', `Successfully updated <strong>${store.name}</strong>. <a href="/store/${store.slug}">View Store ➔</a>`);
   res.redirect(`/stores/${store._id}/edit`);
 };
 
