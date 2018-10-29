@@ -97,9 +97,11 @@ exports.getStoreBySlug = async (req, res, next) => {
 
 exports.getStoresByTags = async (req, res, next) => {
   const { tag } = req.params;
-  // if no tag fallback give me any store that has a tag property on it
+
+  // if no tag fallback is a query that would return any store that has a tag property on it
   const tagQuery = tag || { $exists: true };
 
+  // run static function living on Store model, defined in Store model
   const tagsPromise = Store.getTagsList();
   const storePromise = Store.find({ tags: tagQuery });
 

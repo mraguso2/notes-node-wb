@@ -11,6 +11,10 @@ block content
           a.tag__link(href=`/tags/${t._id}` class=(t._id === tag ? 'tag__link--active' : ''))
             span.tag__text= t._id
             span.tag__count= t.count
+      if tag
+        li.tag
+          a.tag__link(href=`/tags/` style={background: 'initial'})
+            span.tag__count(style={background: 'lightgrey'}) Clear Filter
     .stores
       each store in stores
         +storeCard(store)

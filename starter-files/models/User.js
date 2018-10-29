@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 mongoose.Promise = global.Promise;
 const md5 = require('md5');
 const validator = require('validator');
@@ -24,7 +24,7 @@ const userSchema = new Schema({
   resetPasswordExpires: Date
 });
 
-// creating a virtual field
+// creating a virtual field, gravatar
 userSchema.virtual('gravatar').get(function getGravatar() {
   // this = user
   const hash = md5(this.email);
