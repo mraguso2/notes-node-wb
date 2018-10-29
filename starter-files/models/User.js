@@ -31,6 +31,7 @@ userSchema.virtual('gravatar').get(function getGravatar() {
   return `https://gravatar.com/avatar/${hash}?s=200`;
 });
 
+// set options: usernameField to the "email" vs default "username"
 userSchema.plugin(passportLocalMongoose, { usernameField: 'email' });
 userSchema.plugin(mongodbErrorHandler);
 

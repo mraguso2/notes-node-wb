@@ -37,6 +37,7 @@ exports.validateRegister = (req, res, next) => {
 exports.register = async (req, res, next) => {
   const user = new User({ email: req.body.email, name: req.body.name });
   // pass promisify 2 things: method you want to promisify and what obj to bind
+  // .register available to us from passport-local-mongoose
   const register = promisify(User.register, User);
   await register(user, req.body.password);
   next(); // pass to authController.login

@@ -49,7 +49,7 @@ exports.forgot = async (req, res) => {
 exports.reset = async (req, res) => {
   const user = await User.findOne({
     resetPasswordToken: req.params.token,
-    resetPasswordExpires: { $gt: Date.now() } // check the token - $gt mongo fn
+    resetPasswordExpires: { $gt: Date.now() } // check the token is greater than now - $gt mongo fn
   });
   if (!user) {
     req.flash('error', 'Password reset is invalid or has expired');
