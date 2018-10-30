@@ -50,6 +50,9 @@ exports.resize = async (req, res, next) => {
 };
 
 exports.createStore = async (req, res) => {
+  // take id of currently logged in user and put in author field
+  req.body.author = req.user._id;
+
   const store = await (new Store(req.body)).save(); // so we get back the slug
   req.flash('success', `Successsfully Created ${store.name}. Care to leave a review?`);
   res.redirect(`/store/${store.slug}`);
@@ -62,11 +65,18 @@ exports.getStores = async (req, res) => {
   res.render('stores', { title: 'Stores', stores });
 };
 
+const confirmOwner = ((store, user) => {
+  // .equals method comes along, author is type Object with id string
+  if (!store.author.equals(user._id)) {
+    throw Error('You must own a store in order to edit it');
+  }
+});
+
 exports.editStore = async (req, res) => {
   // 1. Find the store given the ID
   const store = await Store.findOne({ _id: req.params.id });
   // 2. confirm they are the owner of the store
-  // TODO
+  confirmOwner(store, req.user);
   // 3. render out the edit form so the user can update their store
   res.render('editStore', { title: `Edit ${store.name}`, store });
 };
@@ -88,7 +98,8 @@ exports.updateStore = async (req, res) => {
 
 exports.getStoreBySlug = async (req, res, next) => {
   // 1. query DB and find store by slug
-  const store = await Store.findOne({ slug: req.params.slug });
+  // .populate('author') will go off an find document associated with that id on author feild
+  const store = await Store.findOne({ slug: req.params.slug }).populate('author');
   // 2. check if no store - render out a 404 using middleware
   if (!store) return next();
   // 3. render out store template
