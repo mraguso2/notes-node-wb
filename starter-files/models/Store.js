@@ -43,6 +43,12 @@ const storeSchema = new mongoose.Schema({
   }
 });
 
+// Define our Indexes
+storeSchema.index({
+  name: 'text', // index as text to allow you to search within it
+  description: 'text'
+});
+
 // run function before save
 storeSchema.pre('save', async function slugIt(next) {
   // don't want to run this everytime - check if name is modified
