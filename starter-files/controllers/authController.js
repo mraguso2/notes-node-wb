@@ -33,7 +33,7 @@ exports.forgot = async (req, res) => {
   // 1. See if a user with that email exists
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
-    req.flash('error', 'No account with that email'); // don't tell them no email in prod - security flaw - could just saw sent email reset to that email
+    req.flash('error', 'No account with that email'); // don't tell them no email in prod - security flaw - could just say "sent email reset to that email"
     return res.redirect('/login');
   }
   // 2. Set reset tokens and expiry on their account - values saved to user model
