@@ -14,7 +14,7 @@ const multerOptions = {
     if (isPhoto) {
       next(null, true);
     } else {
-      next({ message: 'That filetype isn\'t allowed!' }, false);
+      next({ message: "That filetype isn't allowed!" }, false);
     }
   }
 };
@@ -53,8 +53,11 @@ exports.createStore = async (req, res) => {
   // take id of currently logged in user and put in author field
   req.body.author = req.user._id;
 
-  const store = await (new Store(req.body)).save(); // so we get back the slug
-  req.flash('success', `Successsfully Created ${store.name}. Care to leave a review?`);
+  const store = await new Store(req.body).save(); // so we get back the slug
+  req.flash(
+    'success',
+    `Successsfully Created ${store.name}. Care to leave a review?`
+  );
   res.redirect(`/store/${store.slug}`);
 };
 
@@ -65,12 +68,12 @@ exports.getStores = async (req, res) => {
   res.render('stores', { title: 'Stores', stores });
 };
 
-const confirmOwner = ((store, user) => {
+const confirmOwner = (store, user) => {
   // .equals method comes along, author is type Object with id string
   if (!store.author.equals(user._id)) {
     throw Error('You must own a store in order to edit it');
   }
-});
+};
 
 exports.editStore = async (req, res) => {
   // 1. Find the store given the ID
@@ -92,14 +95,21 @@ exports.updateStore = async (req, res) => {
     // setDefaultsOnInsert: true - this line would allow us to remove setting the location type above
   }).exec();
   // redirect them to the store and tell them it worked
-  req.flash('success', `Successfully updated <strong>${store.name}</strong>. <a href="/store/${store.slug}">View Store ➔</a>`);
+  req.flash(
+    'success',
+    `Successfully updated <strong>${store.name}</strong>. <a href="/store/${
+      store.slug
+    }">View Store ➔</a>`
+  );
   res.redirect(`/stores/${store._id}/edit`);
 };
 
 exports.getStoreBySlug = async (req, res, next) => {
   // 1. query DB and find store by slug
   // .populate('author') will go off an find document associated with that id on author feild
-  const store = await Store.findOne({ slug: req.params.slug }).populate('author');
+  const store = await Store.findOne({ slug: req.params.slug }).populate(
+    'author'
+  );
   // 2. check if no store - render out a 404 using middleware
   if (!store) return next();
   // 3. render out store template
@@ -125,18 +135,42 @@ exports.getStoresByTags = async (req, res, next) => {
 exports.searchStores = async (req, res) => {
   const stores = await Store
     // first find the stores that match
-    .find({
-      $text: {
-        $search: req.query.q,
+    .find(
+      {
+        $text: {
+          $search: req.query.q
+        }
+      },
+      {
+        score: { $meta: 'textScore' } // add meta data: text score based on search
       }
-    }, {
-      score: { $meta: 'textScore' } // add meta data: text score based on search
-    })
+    )
     // sort them
     .sort({
       score: { $meta: 'textScore' } // sort based on that meta data score
     })
     // limit to only 5 results
     .limit(5);
+  res.json(stores);
+};
+
+exports.mapStores = async (req, res) => {
+  const coordinates = [req.query.lng, req.query.lat].map(parseFloat);
+  const q = {
+    location: {
+      // operator in mongodb that will search for near
+      $near: {
+        $geometry: {
+          type: 'Point',
+          coordinates
+        },
+        $maxDistance: 10000 // 10km
+      }
+    }
+  };
+
+  const stores = await Store.find(q)
+    .select('slug name description location')
+    .limit(10); // select only certain fields to bring back and limit on 10 closest stores
   res.json(stores);
 };

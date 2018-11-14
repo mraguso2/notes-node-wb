@@ -21,14 +21,22 @@ exports.validateRegister = (req, res, next) => {
     gmail_remove_subaddress: false
   });
   req.checkBody('password', 'Password cannot be blank!').notEmpty();
-  req.checkBody('password-confirm', 'Confirmed password cannot be blank!').notEmpty();
-  req.checkBody('password-confirm', 'Oops! Your passwords do not match').equals(req.body.password);
+  req
+    .checkBody('password-confirm', 'Confirmed password cannot be blank!')
+    .notEmpty();
+  req
+    .checkBody('password-confirm', 'Oops! Your passwords do not match')
+    .equals(req.body.password);
 
   // will check all the above for any errors
   const errors = req.validationErrors();
   if (errors) {
     req.flash('error', errors.map(err => err.msg));
-    res.render('register', { title: 'Register', body: req.body, flashes: req.flash() });
+    res.render('register', {
+      title: 'Register',
+      body: req.body,
+      flashes: req.flash()
+    });
     return; // stop the fn from running
   }
   next(); // there were no errors! continue on with middleware

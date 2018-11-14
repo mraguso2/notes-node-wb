@@ -26,10 +26,12 @@ const storeSchema = new mongoose.Schema({
       default: 'Point'
     },
     // make up a point - backwards: lng & lat
-    coordinates: [{
-      type: Number,
-      required: 'You must supply coordinates!'
-    }],
+    coordinates: [
+      {
+        type: Number,
+        required: 'You must supply coordinates!'
+      }
+    ],
     address: {
       type: String,
       required: 'You must supply an address, bitch!'
@@ -48,6 +50,8 @@ storeSchema.index({
   name: 'text', // index as text to allow you to search within it
   description: 'text'
 });
+
+storeSchema.index({ location: '2dsphere' });
 
 // run function before save
 storeSchema.pre('save', async function slugIt(next) {

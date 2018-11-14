@@ -2,13 +2,15 @@ import axios from 'axios';
 import dompurify from 'dompurify';
 
 function searchResultsHTML(stores) {
-  return stores.map((store) => {
-    return `
+  return stores
+    .map(
+      store => `
       <a href="/store/${store.slug}" class="search__result">
         <strong>${store.name}</strong>
       </a>
-    `;
-  }).join('');
+    `
+    )
+    .join('');
 }
 
 function typeAhead(search) {
@@ -31,21 +33,25 @@ function typeAhead(search) {
     // hit api endpoint to search for stores based on search parameters
     axios
       .get(`/api/search?q=${this.value}`)
-      .then((res) => {
+      .then(res => {
         if (res.data.length) {
-          searchResults.innerHTML = dompurify.sanitize(searchResultsHTML(res.data));
+          searchResults.innerHTML = dompurify.sanitize(
+            searchResultsHTML(res.data)
+          );
           return;
         }
         // tell them nothing came back
-        searchResults.innerHTML = dompurify.sanitize(`<div class="search__result">No results for ${this.value} found</div>`);
+        searchResults.innerHTML = dompurify.sanitize(
+          `<div class="search__result">No results for ${this.value} found</div>`
+        );
       })
-      .catch((err) => {
+      .catch(err => {
         console.error(err);
       });
   });
 
   // handle keyboard inputs
-  searchInput.on('keyup', (e) => {
+  searchInput.on('keyup', e => {
     // if they aren't pressing up, down or enter, quit
     if (![38, 40, 13].includes(e.keyCode)) {
       return;
