@@ -54,10 +54,7 @@ exports.createStore = async (req, res) => {
   req.body.author = req.user._id;
 
   const store = await new Store(req.body).save(); // so we get back the slug
-  req.flash(
-    'success',
-    `Successsfully Created ${store.name}. Care to leave a review?`
-  );
+  req.flash('success', `Successsfully Created ${store.name}. Care to leave a review?`);
   res.redirect(`/store/${store.slug}`);
 };
 
@@ -107,9 +104,7 @@ exports.updateStore = async (req, res) => {
 exports.getStoreBySlug = async (req, res, next) => {
   // 1. query DB and find store by slug
   // .populate('author') will go off an find document associated with that id on author feild
-  const store = await Store.findOne({ slug: req.params.slug }).populate(
-    'author'
-  );
+  const store = await Store.findOne({ slug: req.params.slug }).populate('author');
   // 2. check if no store - render out a 404 using middleware
   if (!store) return next();
   // 3. render out store template
@@ -170,7 +165,11 @@ exports.mapStores = async (req, res) => {
   };
 
   const stores = await Store.find(q)
-    .select('slug name description location')
+    .select('slug name description location photo')
     .limit(10); // select only certain fields to bring back and limit on 10 closest stores
   res.json(stores);
+};
+
+exports.mapPage = (req, res) => {
+  res.render('map', { title: 'Map' });
 };

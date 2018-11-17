@@ -68,7 +68,8 @@ exports.reset = async (req, res) => {
 
 // more user friendly to in addition let user know if not match right in UI
 exports.confirmedPasswords = (req, res, next) => {
-  if (req.body.password === req.body['password-confirm']) { // need brackets bc dash in obj prop
+  if (req.body.password === req.body['password-confirm']) {
+    // need brackets bc dash in obj prop
     next(); // keep it going
     return;
   }
