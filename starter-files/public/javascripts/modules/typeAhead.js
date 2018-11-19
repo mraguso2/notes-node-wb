@@ -35,9 +35,7 @@ function typeAhead(search) {
       .get(`/api/search?q=${this.value}`)
       .then(res => {
         if (res.data.length) {
-          searchResults.innerHTML = dompurify.sanitize(
-            searchResultsHTML(res.data)
-          );
+          searchResults.innerHTML = dompurify.sanitize(searchResultsHTML(res.data));
           return;
         }
         // tell them nothing came back

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const Store = mongoose.model('Store');
+const User = mongoose.model('User');
 // multer handle photo upload request
 const multer = require('multer');
 const jimp = require('jimp');
@@ -172,4 +173,18 @@ exports.mapStores = async (req, res) => {
 
 exports.mapPage = (req, res) => {
   res.render('map', { title: 'Map' });
+};
+
+exports.heartStores = async (req, res) => {
+  // grab hearts from user and
+  const hearts = req.user.hearts.map(obj => obj.toString());
+  // find out if we need to add store or remove store based on if its already in hearts
+  // there is a $push but we want to remove duplicates so we use addToSet
+  const operator = hearts.includes(req.params.id) ? '$pull' : '$addToSet';
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    { [operator]: { hearts: req.params.id } },
+    { new: true } // return the new user object - without this, it would return the old one
+  );
+  res.json(user);
 };
