@@ -104,8 +104,8 @@ exports.updateStore = async (req, res) => {
 
 exports.getStoreBySlug = async (req, res, next) => {
   // 1. query DB and find store by slug
-  // .populate('author') will go off an find document associated with that id on author feild
-  const store = await Store.findOne({ slug: req.params.slug }).populate('author');
+  // .populate('author') will go off and find document associated with that id on author feild
+  const store = await Store.findOne({ slug: req.params.slug }).populate('author reviews');
   // 2. check if no store - render out a 404 using middleware
   if (!store) return next();
   // 3. render out store template
