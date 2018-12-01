@@ -89,12 +89,42 @@ storeSchema.statics.getTagsList = function getTags() {
   ]);
 };
 
-// virtual relationship
+storeSchema.statics.getTopStores = function() {
+  // .aggregate like .find but can do much more complex store
+  // returning promise so we can await
+  return this.aggregate([
+    // Lookup stores and populate their reviews
+    // for the from mongodb will lowercase your model and add an "s" to the end Review = reviews
+    { $lookup: { from: 'reviews', localField: '_id', foreignField: 'store', as: 'reviews' } }, // adds propery reviews from "as"
+    // filter for only items that have 2 or more reviews
+    { $match: { 'reviews.1': { $exists: true } } }, // .1 looks for 2 reviews - 0 index based & checking for 2 reviews
+    // Add the average reviews field - mongo 3.6 I can use addFields vs project
+    {
+      $addFields: {
+        averageRating: { $avg: '$reviews.rating' }
+      }
+    },
+    // sort it by our new field, highest reviews first
+    { $sort: { averageRating: -1 } }, // -1 = highest to lowest
+    // limit to at most 10
+    { $limit: 10 }
+  ]);
+};
+
+// virtual relationship -- moongoose and cant use these everywhere like in .aggregate in mongo
 // find reviews where the store's _id property === reviews store property
 storeSchema.virtual('reviews', {
   ref: 'Review', // what model to link?
   localField: '_id', // which field on the store?
   foreignField: 'store' // which field on the review?
 });
+
+function autopopulate(next) {
+  this.populate('reviews'); // populate the reviews prop
+  next();
+}
+
+storeSchema.pre('find', autopopulate);
+storeSchema.pre('findOne', autopopulate);
 
 module.exports = mongoose.model('Store', storeSchema);
