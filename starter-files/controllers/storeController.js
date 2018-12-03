@@ -60,10 +60,35 @@ exports.createStore = async (req, res) => {
 };
 
 exports.getStores = async (req, res) => {
+  const page = req.params.page || 1;
+  const limit = 4;
+  const skip = page * limit - limit; // to determine how many stores to skip
+
   // 1. Query the database for a list of all stores
-  const stores = await Store.find(); // populating reviews in storeController using .pre
+  // populating reviews in storeController using .pre
+  const storesPromise = Store.find()
+    .skip(skip)
+    .limit(limit)
+    .sort({ created: 'desc' });
+
+  // Able to query db for just a count of the documents
+  const countPromise = Store.count();
+
+  const [stores, count] = await Promise.all([storesPromise, countPromise]);
+
+  const pages = Math.ceil(count / limit); // upper bound round up to handle non clean divison
+
+  // handle if someone goes to a page number that no longer exists (say data changes)
+  if (!stores.length && skip) {
+    req.flash(
+      'info',
+      `Hey! You asked for page ${page}. However that page no longer exists. Redirecting to the last available page: page: ${pages}`
+    );
+    res.redirect(`/stores/page/${pages}`);
+    return;
+  }
   // sends stores to the template
-  res.render('stores', { title: 'Stores', stores });
+  res.render('stores', { title: 'Stores', stores, count, page, pages });
 };
 
 const confirmOwner = (store, user) => {

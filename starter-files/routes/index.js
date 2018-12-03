@@ -12,6 +12,7 @@ const { catchErrors } = require('../handlers/errorHandlers');
 // Do work here - shell off work to controllers folder. Just put routes in here
 router.get('/', catchErrors(storeController.getStores));
 router.get('/stores', catchErrors(storeController.getStores));
+router.get('/stores/page/:page', catchErrors(storeController.getStores));
 router.get('/add', authController.isLoggedIn, storeController.addStore);
 
 router.post(
