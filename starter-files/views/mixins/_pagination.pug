@@ -5,6 +5,10 @@ mixin pagination(page, pages, count)
         a(href=`/stores/page/${page - 1}`) Prev
     .pagination__text
       p Page #{page} of #{pages} - #{count} total results
+      .pagination__text--pages
+        - const pagesArr = new Array(pages)
+        each _empty, index in pagesArr
+          a(class=`${page == index+1 ? "current" : ""}` href=`/stores/page/${index+1}`) #{index+1}
     .pagination__next
       if page < pages
         a(href=`/stores/page/${parseFloat(page) + 1}`) Next

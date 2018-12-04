@@ -1083,6 +1083,11 @@ label {
         flex: 3 0 auto;
     padding: 1rem;
     text-align: center; }
+    .pagination__text--pages a {
+      padding: 0 1rem; }
+      .pagination__text--pages a.current {
+        background-image: linear-gradient(to right, rgba(255, 196, 14, 0.8) 100%, rgba(255, 196, 14, 0.8) 50%);
+        font-weight: 700; }
 
 .map {
   padding: 20px;
