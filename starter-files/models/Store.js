@@ -35,7 +35,7 @@ const storeSchema = new mongoose.Schema(
       ],
       address: {
         type: String,
-        required: 'You must supply an address, bitch!'
+        required: 'You must supply an address, bitch! :)'
       }
     },
     photo: String,

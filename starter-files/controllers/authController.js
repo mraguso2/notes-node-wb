@@ -101,6 +101,6 @@ exports.update = async (req, res) => {
   // .login coming from passport - made available to us
   await req.login(updatedUser);
 
-  req.flash('success', '🎊 NIce! Your password has been reset! You are now logged in!');
+  req.flash('success', '🎊 Nice! Your password has been reset! You are now logged in!');
   res.redirect('/');
 };

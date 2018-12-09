@@ -2,7 +2,7 @@ extends layout
 
 block content
   .inner
-    h2 Top #{stores.length} Stores
+    h2 ⭐️ Top #{stores.length} Stores
     table.table
       thead
         td photo
@@ -18,5 +18,6 @@ block content
           td #{i + 1}
           td
             a(href=`/store/${store.slug}`)= store.name
-          td= store.reviews.length
+          td
+            a(href=`/store/${store.slug}/#reviewFrm`)= store.reviews.length
           td #{Math.round(store.averageRating * 10 / 10)} / 5

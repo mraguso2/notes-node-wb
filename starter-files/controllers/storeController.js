@@ -93,8 +93,8 @@ exports.getStores = async (req, res) => {
 
 const confirmOwner = (store, user) => {
   // .equals method comes along, author is type Object with id string
-  if (!store.author.equals(user._id)) {
-    throw Error('You must own a store in order to edit it');
+  if (!user || !store.author.equals(user._id)) {
+    throw Error('You must own a store in order to edit it.');
   }
 };
 
@@ -185,7 +185,7 @@ exports.mapStores = async (req, res) => {
           type: 'Point',
           coordinates
         },
-        $maxDistance: 10000 // 10km
+        $maxDistance: 20000 // 10km
       }
     }
   };
